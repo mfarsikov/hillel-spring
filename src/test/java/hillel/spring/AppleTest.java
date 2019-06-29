@@ -1,5 +1,10 @@
 package hillel.spring;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import lombok.val;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -16,6 +21,5 @@ public class AppleTest {
         assertThat(apple.getColor()).isEqualTo("Green");
 
         assertThat(apple).isEqualTo(new Apple(100, "Green"));
-
     }
 }
