@@ -1,16 +1,12 @@
 package hillel.spring.petclinic.pet;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Pet {
-    private Integer id;
-    private String name;
-    private String breed;
-    private Integer age;
-    private Owner owner;
+    private final Integer id;
+    private final String name;
+    private final String breed;
+    private final Integer age;
+    private final Owner owner;
 }
