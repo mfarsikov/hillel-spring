@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.ResourceUtils;
@@ -34,39 +35,38 @@ public class PetControllerTest {
         repository.deleteAll();
     }
 
-    private void init() {
-        repository.create(new Pet(1, "Tom", "Cat", 2, new Owner("Vasya")));
-        repository.create(new Pet(2, "Jerry", "Mouse", 1, new Owner("Petya")));
-    }
-
     @Test
     public void shouldCreatePet() throws Exception {
-        mockMvc.perform(post("/pets")
-                                .contentType("application/json")
-                                .content(fromResource("petclinic/pet/create-pet.json"))
+        MockHttpServletResponse response = mockMvc.perform(post("/pets")
+                                                                   .contentType("application/json")
+                                                                   .content(fromResource("petclinic/pet/create-pet.json"))
         )
-               .andExpect(status().isCreated())
-               .andExpect(header().string("location", "http://localhost/pets/3"));
+                                                  .andExpect(status().isCreated())
+                                                  .andExpect(header().string("location", containsString("http://localhost/pets/")))
+                                                  .andReturn().getResponse();
 
-        assertThat(repository.findById(3)).isPresent();
+        Integer id = Integer.parseInt(response.getHeader("location").replace("http://localhost/pets/", ""));
+
+        assertThat(repository.findById(id)).isPresent();
     }
 
     @Test
     public void shouldUpdateTom() throws Exception {
 
-        init();
+        Integer id = repository.create(new Pet(null, "Tom", "Cat", 2, new Owner("Vasya"))).getId();
 
-        mockMvc.perform(put("/pets/{id}", 1)
+        mockMvc.perform(put("/pets/{id}", id)
                                 .contentType("application/json")
                                 .content(fromResource("petclinic/pet/update-pet.json")))
                .andExpect(status().isOk());
 
-        assertThat(repository.findById(1).get().getAge()).isEqualTo(3);
+        assertThat(repository.findById(id).get().getAge()).isEqualTo(3);
     }
 
     @Test
     public void shouldDeleteJerry() throws Exception {
-        init();
+        repository.create(new Pet(null, "Tom", "Cat", 2, new Owner("Vasya")));
+        repository.create(new Pet(null, "Jerry", "Mouse", 1, new Owner("Petya")));
 
         mockMvc.perform(delete("/pets/{id}", 2))
                .andExpect(status().isNoContent());
@@ -76,18 +76,22 @@ public class PetControllerTest {
 
     @Test
     public void shouldFindAllPets() throws Exception {
-        init();
+        repository.create(new Pet(null, "Tom", "Cat", 2, new Owner("Vasya")));
+        repository.create(new Pet(null, "Jerry", "Mouse", 1, new Owner("Petya")));
 
         mockMvc.perform(get("/pets"))
                .andExpect(status().isOk())
-               .andExpect(content().json(fromResource("petclinic/pet/all-pets.json")))
+               .andExpect(content().json(fromResource("petclinic/pet/all-pets.json"), false))
                .andExpect(jsonPath("$", hasSize(2)))
-               .andExpect(jsonPath("$[0].owner.name", is("Vasya")));
+               .andExpect(jsonPath("$[0].owner.name", is("Vasya")))
+               .andExpect(jsonPath("$[0].id", notNullValue()))
+               .andExpect(jsonPath("$[1].id", notNullValue()));
     }
 
     @Test
     public void shouldReturnTom() throws Exception {
-        init();
+        repository.create(new Pet(null, "Tom", "Cat", 2, new Owner("Vasya")));
+        repository.create(new Pet(null, "Jerry", "Mouse", 1, new Owner("Petya")));
 
         mockMvc.perform(get("/pets").param("name", "Tom"))
                .andExpect(status().isOk())
@@ -97,7 +101,8 @@ public class PetControllerTest {
 
     @Test
     public void shouldReturnJerry() throws Exception {
-        init();
+        repository.create(new Pet(null, "Tom", "Cat", 2, new Owner("Vasya")));
+        repository.create(new Pet(null, "Jerry", "Mouse", 1, new Owner("Petya")));
 
         mockMvc.perform(get("/pets")
                                 .param("name", "Jerry")
