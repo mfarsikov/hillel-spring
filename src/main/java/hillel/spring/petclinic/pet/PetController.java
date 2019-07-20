@@ -5,8 +5,11 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import hillel.spring.petclinic.pet.dto.PetDtoConverter;
+import hillel.spring.petclinic.pet.dto.PetInputDto;
 import lombok.AllArgsConstructor;
 import lombok.val;
+import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +31,7 @@ import static org.springframework.http.HttpStatus.*;
 @AllArgsConstructor
 public class PetController {
     private final PetService petService;
+    private final PetDtoConverter dtoConverter;
 
     private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance()
                                                                         .scheme("http")
@@ -65,7 +69,11 @@ public class PetController {
     }
 
     @PostMapping("/pets")
-    public ResponseEntity<?> createPet(@RequestBody Pet pet) {
+    public ResponseEntity<?> createPet(@RequestBody PetInputDto dto) {
+
+        val pet = dtoConverter.toModel(dto);
+        pet.setId(22);
+
         petService.createPet(pet);
 
         return ResponseEntity.created(uriBuilder.build(pet.getId())).build();

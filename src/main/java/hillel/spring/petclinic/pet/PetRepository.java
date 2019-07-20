@@ -2,52 +2,37 @@ package hillel.spring.petclinic.pet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.hibernate.validator.constraints.pl.PESEL;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class PetRepository {
-    private final List<Pet> pets = new ArrayList<>();
+    private final Map<Integer, Pet> idToPet = new ConcurrentHashMap<>();
 
     public List<Pet> findAll() {
-        return pets;
+        return new ArrayList<>(idToPet.values());
     }
 
     public Optional<Pet> findById(Integer id) {
-        return pets.stream()
-                   .filter(it -> it.getId().equals(id))
-                   .findFirst();
+        return Optional.ofNullable(idToPet.get(id));
     }
 
     public void create(Pet pet) {
-        pets.add(pet);
+        idToPet.put(pet.getId(), pet);
     }
 
     public void update(Pet pet) {
-
-        findIndexById(pet.getId()).ifPresentOrElse(idx -> pets.set(idx, pet), () -> {
-            throw new NoSuchPetException();
-        });
-    }
-
-    private Optional<Integer> findIndexById(Integer id) {
-        for (int i = 0; i < pets.size(); i++) {
-            if (pets.get(i).getId().equals(id)) {
-                return Optional.of(i);
-            }
-        }
-        return Optional.empty();
+        idToPet.replace(pet.getId(), pet);
     }
 
     public void delete(Integer id) {
-        findIndexById(id).ifPresentOrElse(idx -> pets.remove(idx.intValue()), () -> {
-            throw new NoSuchPetException();
-        });
+        idToPet.remove(id);
     }
 
     public void deleteAll() {
-        pets.clear();
+        idToPet.clear();
     }
 }
