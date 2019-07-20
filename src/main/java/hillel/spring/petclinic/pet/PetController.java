@@ -1,22 +1,38 @@
 package hillel.spring.petclinic.pet;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @AllArgsConstructor
 public class PetController {
     private final PetService petService;
+
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance()
+                                                                        .scheme("http")
+                                                                        .host("localhost")
+                                                                        .path("/pets/{id}");
 
     @GetMapping("/pets/{id}")
     public Pet findById(@PathVariable Integer id) {
@@ -26,13 +42,33 @@ public class PetController {
     }
 
     @GetMapping("/pets")
-    public List<Pet> findAll() {
-        return petService.findAll();
+    public List<Pet> findAll(Optional<String> name,
+                             Optional<Integer> age) {
+
+        Optional<Predicate<Pet>> maybeNamePredicate = name.map(this::filterByName);
+        Optional<Predicate<Pet>> maybeAgePredicate = age.map(this::filterByAge);
+
+        Predicate<Pet> predicate = Stream.of(maybeAgePredicate, maybeNamePredicate)
+                                         .flatMap(Optional::stream)
+                                         .reduce(Predicate::and)
+                                         .orElse(pet -> true);
+
+        return petService.findAll(predicate);
+    }
+
+    private Predicate<Pet> filterByName(String name) {
+        return pet -> pet.getName().equals(name);
+    }
+
+    private Predicate<Pet> filterByAge(Integer age) {
+        return pet -> pet.getAge().equals(age);
     }
 
     @PostMapping("/pets")
-    public void createPet(@RequestBody Pet pet) {
+    public ResponseEntity<?> createPet(@RequestBody Pet pet) {
         petService.createPet(pet);
+
+        return ResponseEntity.created(uriBuilder.build(pet.getId())).build();
     }
 
     @PutMapping("/pets/{id}")
@@ -41,17 +77,22 @@ public class PetController {
         if (!pet.getId().equals(id)) {
             throw new IdMissmatchException();
         }
-        try {
-            petService.update(pet);
-            return ResponseEntity.ok().build();
-        } catch (NoSuchPetException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        petService.update(pet);
+        return ResponseEntity.ok().build();
+
     }
 
     @DeleteMapping("/pets/{id}")
-    public void deletePet(@PathVariable Integer id){
+    @ResponseStatus(NO_CONTENT)
+    public void deletePet(@PathVariable Integer id) {
         petService.delete(id);
     }
+
+    @ExceptionHandler
+    @ResponseStatus(BAD_REQUEST)
+    public void noSuchPet(NoSuchPetException ex) {
+
+    }
+
 }
 

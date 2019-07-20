@@ -2,6 +2,8 @@ package hillel.spring.petclinic.pet;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,12 +13,14 @@ import org.springframework.stereotype.Service;
 public class PetService {
     private final PetRepository petRepository;
 
-    public Optional<Pet> findById(Integer id){
+    public Optional<Pet> findById(Integer id) {
         return petRepository.findById(id);
     }
 
-    public List<Pet> findAll() {
-        return petRepository.findAll();
+    public List<Pet> findAll(Predicate<Pet> predicate) {
+        return petRepository.findAll().stream()
+                            .filter(predicate)
+                            .collect(Collectors.toList());
     }
 
     public void createPet(Pet pet) {
