@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -17,8 +18,7 @@ import lombok.Data;
 @Entity
 public class MedicalCard {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)    private Integer id;
     private Integer petId;
     private LocalDateTime createdDate;
     @OneToOne(cascade = CascadeType.ALL)
