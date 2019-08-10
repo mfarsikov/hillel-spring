@@ -85,6 +85,11 @@ public class PetController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/pets/swap-owners/{firstId}/{secondId}")
+    public void swapOwners(@PathVariable Integer firstId, @PathVariable Integer secondId) throws Exception{
+        petService.swapOwners(firstId, secondId);
+    }
+
     @DeleteMapping("/pets/{id}")
     @ResponseStatus(NO_CONTENT)
     public void deletePet(@PathVariable Integer id) {
