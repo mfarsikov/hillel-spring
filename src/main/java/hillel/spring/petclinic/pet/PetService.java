@@ -39,6 +39,7 @@ public class PetService {
     }
 
     public void save(Pet pet) {
+        pet.getOwner().toString();
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) { }
@@ -60,8 +61,8 @@ public class PetService {
         val secondPet = petRepository.findById(secondId).get();
 
         val firstOwner = firstPet.getOwner();
-        firstPet.setOwner(secondPet.getOwner());
-        secondPet.setOwner(firstOwner);
+        firstPet.setOwner(secondPet.getOwner().orElse(null));
+        secondPet.setOwner(firstOwner.orElse(null));
 
         petRepository.save(firstPet);
         petRepository.save(secondPet);

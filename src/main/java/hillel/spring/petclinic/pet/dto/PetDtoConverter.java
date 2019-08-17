@@ -1,5 +1,9 @@
 package hillel.spring.petclinic.pet.dto;
 
+import javax.swing.*;
+
+import java.util.Optional;
+
 import hillel.spring.petclinic.pet.Pet;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,4 +23,8 @@ public interface PetDtoConverter {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "version", ignore = true)
     void update(@MappingTarget Pet pet, PetInputDto dto);
+
+    default <T> T unpack(Optional<T> maybe){
+        return maybe.orElse(null);
+    }
 }

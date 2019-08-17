@@ -5,11 +5,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +29,8 @@ public class Pet {
     private String breed;
     private Integer age;
     private String owner;
+
+    public Optional<String> getOwner() {
+        return Optional.ofNullable(owner);
+    }
 }
