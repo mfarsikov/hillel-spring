@@ -30,6 +30,13 @@ public class Pet {
     private Integer age;
     private String owner;
 
+    public Pet(String name, String breed, Integer age, String owner) {
+        this.name = name;
+        this.breed = breed;
+        this.age = age;
+        this.owner = owner;
+    }
+
     public Optional<String> getOwner() {
         return Optional.ofNullable(owner);
     }

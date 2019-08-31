@@ -54,7 +54,7 @@ public class PetControllerTest {
     @Test
     public void shouldUpdateTom() throws Exception {
 
-        Integer id = repository.save(new Pet(null, "Tom", "Cat", 2, "Vasya")).getId();
+        Integer id = repository.save(new Pet("Tom", "Cat", 2, "Vasya")).getId();
 
         mockMvc.perform(put("/pets/{id}", id)
                                 .contentType("application/json")
@@ -66,8 +66,8 @@ public class PetControllerTest {
 
     @Test
     public void shouldDeleteJerry() throws Exception {
-        Integer id = repository.save(new Pet(null, "Tom", "Cat", 2, "Vasya")).getId();
-        repository.save(new Pet(null, "Jerry", "Mouse", 1, "Petya"));
+        Integer id = repository.save(new Pet("Tom", "Cat", 2, "Vasya")).getId();
+        repository.save(new Pet("Jerry", "Mouse", 1, "Petya"));
 
         mockMvc.perform(delete("/pets/{id}", id))
                .andExpect(status().isNoContent());
@@ -77,8 +77,8 @@ public class PetControllerTest {
 
     @Test
     public void shouldFindAllPets() throws Exception {
-        repository.save(new Pet(null, "Tom", "Cat", 2, "Vasya"));
-        repository.save(new Pet(null, "Jerry", "Mouse", 1, "Petya"));
+        repository.save(new Pet("Tom", "Cat", 2, "Vasya"));
+        repository.save(new Pet("Jerry", "Mouse", 1, "Petya"));
 
         mockMvc.perform(get("/pets"))
                .andExpect(status().isOk())
@@ -91,8 +91,8 @@ public class PetControllerTest {
 
     @Test
     public void shouldReturnTom() throws Exception {
-        repository.save(new Pet(null, "Tom", "Cat", 2, "Vasya"));
-        repository.save(new Pet(null, "Jerry", "Mouse", 1, "Petya"));
+        repository.save(new Pet("Tom", "Cat", 2, "Vasya"));
+        repository.save(new Pet("Jerry", "Mouse", 1, "Petya"));
 
         mockMvc.perform(get("/pets").param("name", "Tom"))
                .andExpect(status().isOk())
@@ -102,8 +102,8 @@ public class PetControllerTest {
 
     @Test
     public void shouldReturnJerry() throws Exception {
-        repository.save(new Pet(null, "Tom", "Cat", 2, "Vasya"));
-        repository.save(new Pet(null, "Jerry", "Mouse", 1, "Petya"));
+        repository.save(new Pet("Tom", "Cat", 2, "Vasya"));
+        repository.save(new Pet("Jerry", "Mouse", 1, "Petya"));
 
         mockMvc.perform(get("/pets")
                                 .param("name", "Jerry")

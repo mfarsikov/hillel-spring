@@ -77,7 +77,8 @@ public class PetController {
     @PutMapping("/pets/{id}")
     public ResponseEntity<?> updatePet(@RequestBody PetInputDto dto,
                                        @PathVariable Integer id) {
-        val pet = dtoConverter.toModel(dto, id);
+        var pet = petService.findById(id).orElseThrow(NoSuchPetException::new);
+        dtoConverter.update(pet, dto);
         petService.save(pet);
         return ResponseEntity.ok().build();
     }
