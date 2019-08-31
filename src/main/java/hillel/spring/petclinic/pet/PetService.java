@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,19 +21,21 @@ public class PetService {
         return petRepository.findById(id);
     }
 
-    public List<Pet> findAll(Optional<String> name, Optional<Integer> age
+    public Page<Pet> findAll(Optional<String> name,
+                             Optional<Integer> age,
+                             Pageable pageable
     ) {
 
         if (name.isPresent() && age.isPresent()) {
-            return petRepository.findByNameAndAge(name.get(), age.get());
+            return petRepository.findByNameAndAge(name.get(), age.get(), pageable);
         }
         if (name.isPresent()) {
-            return petRepository.findByName(name.get());
+            return petRepository.findByName(name.get(), pageable);
         }
         if (age.isPresent()) {
-            return petRepository.findByAge(age.get());
+            return petRepository.findByAge(age.get(), pageable);
         }
-        return petRepository.findAll();
+        return petRepository.findAll(pageable);
     }
 
     public Pet createPet(Pet pet) {

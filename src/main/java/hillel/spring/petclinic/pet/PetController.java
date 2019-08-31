@@ -9,6 +9,8 @@ import hillel.spring.petclinic.pet.dto.PetInputDto;
 import lombok.val;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,10 +54,11 @@ public class PetController {
     }
 
     @GetMapping("/pets")
-    public List<Pet> findAll(Optional<String> name,
-                             Optional<Integer> age) {
+    public Page<Pet> findAll(Optional<String> name,
+                             Optional<Integer> age,
+                             Pageable pageable) {
 
-        return petService.findAll(name, age);
+        return petService.findAll(name, age, pageable);
     }
 
     private Predicate<Pet> filterByName(String name) {
