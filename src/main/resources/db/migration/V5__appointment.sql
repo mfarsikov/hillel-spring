@@ -1,8 +1,11 @@
-create table appointment(
+create table appointment (
     id serial primary key,
+    version integer,
     doctor_id integer,
-    date date,
-    hour integer
+    date date
 );
 
-alter table appointment add constraint uq_appointment unique (doctor_id, date, hour);
+create  table appointment_hours (
+    appointment_id integer,
+    hours integer
+);

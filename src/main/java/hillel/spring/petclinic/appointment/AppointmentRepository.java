@@ -6,5 +6,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
-    Optional<Appointment> findByDoctorIdAndDateAndHour(Integer doctorId, LocalDate date, Integer hour);
+
+    Optional<Appointment> findByDoctorIdAndDate(Integer doctorId, LocalDate date);
 }

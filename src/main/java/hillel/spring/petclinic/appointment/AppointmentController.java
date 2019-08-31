@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.hibernate.StaleObjectStateException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,17 +27,18 @@ public class AppointmentController {
 
     @PostMapping
     @SneakyThrows
-    public void create(@RequestBody Appointment appointment) {
+    @Retryable(StaleObjectStateException.class)
+    public void create(@RequestBody AppointmentInputDto dto) {
 
-        val conflictedAppointment = repository.findByDoctorIdAndDateAndHour(appointment.getDoctorId(),
-                                                                            appointment.getDate(),
-                                                                            appointment.getHour());
+        val appointment = repository.findByDoctorIdAndDate(dto.getDoctorId(),
+                                                           dto.getDate())
+                .orElse(new Appointment(dto.getDoctorId(), dto.getDate()));
 
         Thread.sleep(3000);
 
-        if (conflictedAppointment.isPresent()) {
-            throw new RuntimeException();
-        }
+        if(appointment.getHours().contains(dto.getHour())) throw new RuntimeException();
+
+        appointment.getHours().add(dto.getHour());
 
         repository.save(appointment);
     }
