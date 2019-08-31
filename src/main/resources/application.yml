@@ -15,9 +15,22 @@ spring:
     console:
       enabled: true
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    properties.hibernate.temp.use_jdbc_metadata_defaults: false
     open-in-view: false
     hibernate:
       ddl-auto: validate
 logging:
   level:
     sql: debug
+
+---
+spring.profiles: europe
+pet-clinic:
+  working-hours:
+    start: 9AM
+    end: 6PM
+
+---
+spring.profles: test
+#...
