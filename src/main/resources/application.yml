@@ -5,6 +5,7 @@ pet-clinic:
   working-hours:
     start: 8AM
     end: 5PM
+  doctor-url: "http://localhost:8081"
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -20,9 +21,9 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
-logging:
-  level:
+logging.level:
     sql: debug
+    org.springframework.web.client: debug
 
 ---
 spring.profiles: europe
@@ -32,5 +33,7 @@ pet-clinic:
     end: 6PM
 
 ---
-spring.profles: test
+spring.profiles: test
+pet-clinic:
+  doctor-url: "http://localhost:8089"
 #...

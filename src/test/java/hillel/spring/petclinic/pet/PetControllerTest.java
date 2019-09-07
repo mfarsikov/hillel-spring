@@ -114,7 +114,7 @@ public class PetControllerTest {
                .andExpect(jsonPath("$.content[0].age", is(1)));
     }
 
-    public String fromResource(String path) {
+    public static String fromResource(String path) {
         try {
             File file = ResourceUtils.getFile("classpath:" + path);
             return Files.readString(file.toPath());
