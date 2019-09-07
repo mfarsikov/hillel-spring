@@ -24,6 +24,7 @@ spring:
 logging.level:
     sql: debug
     org.springframework.web.client: debug
+    hillel.spring.petclinic.info: trace
 
 ---
 spring.profiles: europe

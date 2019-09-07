@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import hillel.spring.petclinic.Starter;
 import hillel.spring.petclinic.pet.dto.PetDtoConverter;
 import hillel.spring.petclinic.pet.dto.PetInputDto;
 import lombok.val;
 import org.hibernate.StaleObjectStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
