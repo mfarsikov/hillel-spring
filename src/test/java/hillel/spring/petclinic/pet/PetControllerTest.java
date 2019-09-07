@@ -82,11 +82,11 @@ public class PetControllerTest {
 
         mockMvc.perform(get("/pets"))
                .andExpect(status().isOk())
-               .andExpect(content().json(fromResource("petclinic/pet/all-pets.json"), false))
-               .andExpect(jsonPath("$", hasSize(2)))
-               .andExpect(jsonPath("$[0].owner", is("Vasya")))
-               .andExpect(jsonPath("$[0].id", notNullValue()))
-               .andExpect(jsonPath("$[1].id", notNullValue()));
+               //.andExpect(content().json(fromResource("petclinic/pet/all-pets.json"), false))
+               .andExpect(jsonPath("$.content", hasSize(2)))
+               .andExpect(jsonPath("$.content[0].owner", is("Vasya")))
+               .andExpect(jsonPath("$.content[0].id", notNullValue()))
+               .andExpect(jsonPath("$.content[1].id", notNullValue()));
     }
 
     @Test
@@ -96,8 +96,8 @@ public class PetControllerTest {
 
         mockMvc.perform(get("/pets").param("name", "Tom"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$", hasSize(1)))
-               .andExpect(jsonPath("$[0].name", is("Tom")));
+               .andExpect(jsonPath("$.content", hasSize(1)))
+               .andExpect(jsonPath("$.content[0].name", is("Tom")));
     }
 
     @Test
@@ -109,9 +109,9 @@ public class PetControllerTest {
                                 .param("name", "Jerry")
                                 .param("age", "1"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$", hasSize(1)))
-               .andExpect(jsonPath("$[0].name", is("Jerry")))
-               .andExpect(jsonPath("$[0].age", is(1)));
+               .andExpect(jsonPath("$.content", hasSize(1)))
+               .andExpect(jsonPath("$.content[0].name", is("Jerry")))
+               .andExpect(jsonPath("$.content[0].age", is(1)));
     }
 
     public String fromResource(String path) {
