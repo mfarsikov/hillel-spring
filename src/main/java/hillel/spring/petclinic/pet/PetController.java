@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import hillel.spring.petclinic.Starter;
 import hillel.spring.petclinic.pet.dto.PetDtoConverter;
 import hillel.spring.petclinic.pet.dto.PetInputDto;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
@@ -16,6 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +36,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
+@Slf4j
 public class PetController {
     private final PetService petService;
     private final PetDtoConverter dtoConverter;
@@ -57,9 +63,14 @@ public class PetController {
     }
 
     @GetMapping("/pets")
+    @PreAuthorize("hasAuthority('read:pets')")
     public Page<Pet> findAll(Optional<String> name,
                              Optional<Integer> age,
-                             Pageable pageable) {
+                             Pageable pageable,
+                             @AuthenticationPrincipal UserDetails userDetails) {
+
+        //val userDetails = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        log.info("Current user details: " + userDetails);
 
         return petService.findAll(name, age, pageable);
     }
@@ -73,6 +84,7 @@ public class PetController {
     }
 
     @PostMapping("/pets")
+    @PreAuthorize("hasAuthority('create:pets')")
     public ResponseEntity<?> createPet(@RequestBody PetInputDto dto) {
 
         val created = petService.createPet(dtoConverter.toModel(dto));
