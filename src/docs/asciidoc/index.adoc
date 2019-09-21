@@ -1,0 +1,21 @@
+= Pet clinic REST application
+
+This is a tutorial application for Hillel students
+
+== Diagnosise API
+
+Its purspose  is to allow pet owners to have quality diagnose for their pets.
+
+=== Get Diagnose
+
+HTTP request is following:
+
+include::{snippets}/get-diagnosis/http-request.adoc[]
+
+HTTP response is as this:
+
+include::{snippets}/get-diagnosis/http-response.adoc[]
+
+Fields description:
+
+include::{snippets}/get-diagnosis/response-fields.adoc[]

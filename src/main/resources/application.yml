@@ -34,7 +34,11 @@ pet-clinic:
     end: 6PM
 
 ---
-spring.profiles: test
+spring:
+  profiles: test
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
 pet-clinic:
   doctor-url: "http://localhost:8089"
 #...
