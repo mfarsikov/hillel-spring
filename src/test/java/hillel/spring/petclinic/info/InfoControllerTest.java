@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -33,7 +34,9 @@ public class InfoControllerTest {
         stubFor(get("/doctors")
                         .willReturn(okJson(fromResource("petclinic/info/workers.json"))));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/workers"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/workers")
+                                              .header(HttpHeaders.AUTHORIZATION, "Basic bWF4OjEyMw==")
+        )
                .andExpect(status().isOk())
                .andExpect(content().json(fromResource("petclinic/info/workers.json")));
 

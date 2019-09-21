@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import hillel.spring.petclinic.Starter;
 import hillel.spring.petclinic.pet.dto.PetDtoConverter;
 import hillel.spring.petclinic.pet.dto.PetInputDto;
+import hillel.spring.petclinic.security.ClinicUser;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.hibernate.StaleObjectStateException;
@@ -67,7 +68,7 @@ public class PetController {
     public Page<Pet> findAll(Optional<String> name,
                              Optional<Integer> age,
                              Pageable pageable,
-                             @AuthenticationPrincipal UserDetails userDetails) {
+                             @AuthenticationPrincipal ClinicUser userDetails) {
 
         //val userDetails = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         log.info("Current user details: " + userDetails);

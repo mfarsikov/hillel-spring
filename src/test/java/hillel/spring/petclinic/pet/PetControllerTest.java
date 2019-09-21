@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -40,6 +41,7 @@ public class PetControllerTest {
     public void shouldCreatePet() throws Exception {
         MockHttpServletResponse response = mockMvc.perform(post("/pets")
                                                                    .contentType("application/json")
+                                                                   .header(HttpHeaders.AUTHORIZATION,"Basic bWF4OjEyMw==")
                                                                    .content(fromResource("petclinic/pet/create-pet.json"))
         )
                                                   .andExpect(status().isCreated())
@@ -58,6 +60,7 @@ public class PetControllerTest {
 
         mockMvc.perform(put("/pets/{id}", id)
                                 .contentType("application/json")
+                                .header(HttpHeaders.AUTHORIZATION,"Basic bWF4OjEyMw==")
                                 .content(fromResource("petclinic/pet/update-pet.json")))
                .andExpect(status().isOk());
 
@@ -69,7 +72,9 @@ public class PetControllerTest {
         Integer id = repository.save(new Pet("Tom", "Cat", 2, "Vasya")).getId();
         repository.save(new Pet("Jerry", "Mouse", 1, "Petya"));
 
-        mockMvc.perform(delete("/pets/{id}", id))
+        mockMvc.perform(delete("/pets/{id}", id)
+                                .header(HttpHeaders.AUTHORIZATION,"Basic bWF4OjEyMw==")
+        )
                .andExpect(status().isNoContent());
 
         assertThat(repository.findById(id)).isEmpty();
@@ -80,7 +85,9 @@ public class PetControllerTest {
         repository.save(new Pet("Tom", "Cat", 2, "Vasya"));
         repository.save(new Pet("Jerry", "Mouse", 1, "Petya"));
 
-        mockMvc.perform(get("/pets"))
+        mockMvc.perform(get("/pets")
+                                .header(HttpHeaders.AUTHORIZATION,"Basic bWF4OjEyMw==")
+        )
                .andExpect(status().isOk())
                //.andExpect(content().json(fromResource("petclinic/pet/all-pets.json"), false))
                .andExpect(jsonPath("$.content", hasSize(2)))
@@ -94,7 +101,9 @@ public class PetControllerTest {
         repository.save(new Pet("Tom", "Cat", 2, "Vasya"));
         repository.save(new Pet("Jerry", "Mouse", 1, "Petya"));
 
-        mockMvc.perform(get("/pets").param("name", "Tom"))
+        mockMvc.perform(get("/pets").param("name", "Tom")
+                                    .header(HttpHeaders.AUTHORIZATION,"Basic bWF4OjEyMw==")
+        )
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.content", hasSize(1)))
                .andExpect(jsonPath("$.content[0].name", is("Tom")));
@@ -107,7 +116,9 @@ public class PetControllerTest {
 
         mockMvc.perform(get("/pets")
                                 .param("name", "Jerry")
-                                .param("age", "1"))
+                                .param("age", "1")
+                                .header(HttpHeaders.AUTHORIZATION,"Basic bWF4OjEyMw==")
+        )
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.content", hasSize(1)))
                .andExpect(jsonPath("$.content[0].name", is("Jerry")))
